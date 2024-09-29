@@ -18,11 +18,21 @@ app.get(`${baseAPIRoute}/drivers`, (req, res) => {
 app.get(`${baseAPIRoute}/drivers/standings/:position`, (req, res) => {
   const { position } = req.params;
   const selctedDriver = drivers[position - 1];
+
+  if (!selctedDriver) {
+    res.status(404).send("Posição não existe no campeonato!");
+  }
+
   res.status(200).send(selctedDriver);
 });
 app.get(`${baseAPIRoute}/drivers/:id`, (req, res) => {
   const { id } = req.params;
   const selctedDriver = drivers.find((driver) => driver.id === id);
+
+  if (!selctedDriver) {
+    res.status(404).send("Driver not found!");
+  }
+
   res.status(200).send(selctedDriver);
 });
 
@@ -45,6 +55,11 @@ app.put(`${baseAPIRoute}/drivers/:id`, (req, res) => {
   const { id } = req.params;
   const selctedDriver = drivers.find((d) => d.id === id);
 
+  if (!selctedDriver) {
+    res.status(404).send("Driver not found!");
+    return;
+  }
+
   for (const key in selctedDriver) {
     if (req.body[key]) {
       selctedDriver[key] = req.body[key];
@@ -57,6 +72,11 @@ app.put(`${baseAPIRoute}/drivers/:id`, (req, res) => {
 app.delete(`${baseAPIRoute}/drivers/:id`, (req, res) => {
   const { id } = req.params;
   const selctedDriver = drivers.find((d) => d.id === id);
+
+  if (!selctedDriver) {
+    res.status(404).send("Driver not found!");
+    return;
+  }
 
   const index = drivers.indexOf(selctedDriver);
 
