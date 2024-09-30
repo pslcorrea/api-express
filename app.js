@@ -7,7 +7,6 @@ const baseAPIRoute = "/api/v1";
 const app = express();
 
 app.use(express.json());
-
 app.use(baseAPIRoute + "/drivers", driversRouter);
 app.use(baseAPIRoute + "/teams", teamsRouter);
 
