@@ -15,42 +15,50 @@ router.get("/", (req, res) => {
 });
 
 //Route Parameter ou parâmetro de rota
-router.get("/standings/:position", (req, res) => {
+router.get("/standings/:position", (req, res, next) => {
   const { position } = req.params;
   const { error } = validatePosition(position, drivers.length);
 
   if (error) {
-    res.status(400).send(error);
-    return;
+    const err = new Error();
+    err.statusCode = 400;
+    err.description = error.details;
+    return next(err);
   }
 
   const selctedDriver = drivers[position - 1];
 
   if (!selctedDriver) {
-    res.status(404).send("Posição não existe no campeonato!");
-    return;
+    const err = new Error();
+    err.statusCode = 404;
+    err.description = "posição não existe no campeonato!";
+    return next(err);
   }
 
   res.status(200).send(selctedDriver);
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", (req, res, next) => {
   const { id } = req.params;
   const selctedDriver = drivers.find((driver) => driver.id === id);
 
   if (!selctedDriver) {
-    res.status(404).send("Driver not found!");
-    return;
+    const err = new Error();
+    err.statusCode = 404;
+    err.description = "Driver not found!";
+    return next(err);
   }
 
   res.status(200).send(selctedDriver);
 });
 
-router.post("/", (req, res) => {
+router.post("/", (req, res, next) => {
   const { error } = validateDriverInfo(req.body);
   if (error) {
-    res.status(400).send(error);
-    return;
+    const err = new Error();
+    err.statusCode = 400;
+    err.description = error.details;
+    return next(err);
   }
 
   const newDriver = { ...req.body, id: randomUUID() };
@@ -67,18 +75,22 @@ router.post("/", (req, res) => {
   res.status(200).send(newDriver);
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", (req, res, next) => {
   const { error } = validateUpdateDriverInfo(req.body);
   if (error) {
-    res.status(400).send(error);
-    return;
+    const err = new Error();
+    err.statusCode = 400;
+    err.description = error.details;
+    return next(err);
   }
 
   const { id } = req.params;
   const selctedDriver = drivers.find((d) => d.id === id);
   if (!selctedDriver) {
-    res.status(404).send("Driver not found!");
-    return;
+    const err = new Error();
+    err.statusCode = 404;
+    err.description = "Driver not found!";
+    return next(err);
   }
 
   for (const key in selctedDriver) {
@@ -90,13 +102,15 @@ router.put("/:id", (req, res) => {
   res.status(200).send(selctedDriver);
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", (req, res, next) => {
   const { id } = req.params;
   const selctedDriver = drivers.find((d) => d.id === id);
 
   if (!selctedDriver) {
-    res.status(404).send("Driver not found!");
-    return;
+    const err = new Error();
+    err.statusCode = 404;
+    err.description = "Driver not found!";
+    return next(err);
   }
 
   const index = drivers.indexOf(selctedDriver);
